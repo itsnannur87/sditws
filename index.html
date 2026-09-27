@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal PPDB SDIT Waladun Sholihun - Official System</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- QRCode.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Google Fonts: Inter & Amiri -->
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#0f1015',
+            brandNav: '#161820',
+            brandCard: '#1e202a',
+            brandGold: '#f1b423',
+            brandGoldHover: '#d99e12',
+            heroBrown: '#5e2a04',
+            heroBrownDark: '#421d02',
+            emeraldAccent: '#10b981'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            arabic: ['Amiri', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar Styles */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f1015; }
+    ::-webkit-scrollbar-thumb { background: #2e3240; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f1b423; }
+
+    /* Custom Animations */
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(241, 180, 35, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(241, 180, 35, 0.5); }
+    }
+    .glow-gold { animation: pulseGlow 3s infinite; }
+
+    /* Print styling optimization */
+    @media print {
+      body * { visibility: hidden; }
+      #printableReceipt, #printableReceipt * { visibility: visible; }
+      #printableReceipt { position: absolute; left: 0; top: 0; width: 100%; color: #000 !important; background: #fff !important; padding: 20px !important; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-brandDark text-gray-100 font-sans min-h-screen flex flex-col justify-between antialiased selection:bg-brandGold selection:text-black">
+
+  <!-- 1. FULLSCREEN LOADING OVERLAY -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex flex-col items-center justify-center transition-opacity duration-300">
+    <div class="relative w-20 h-20 flex items-center justify-center">
+      <div class="absolute inset-0 rounded-full border-4 border-t-brandGold border-r-transparent border-b-brandGold/30 border-l-transparent animate-spin"></div>
+      <i class="fa-solid fa-kaaba text-2xl text-brandGold"></i>
+    </div>
+    <p class="text-brandGold font-bold text-lg mt-6 tracking-wide text-center px-4">
+      Bismillah, Memuat Portal PPDB SDIT Waladun Sholihun...
+    </p>
+    <p id="loadingSubtitle" class="text-xs text-gray-400 mt-1">Sekolah berbasis Tahfidz dan Kewirausahaan</p>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-[10000] space-y-3 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- CUSTOM CONFIRMATION DIALOG MODAL -->
+  <div id="confirmModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9998] hidden flex items-center justify-center p-4">
+    <div class="bg-brandNav border border-gray-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-fade-in">
+      <div class="flex items-center gap-3 text-amber-400 text-xl font-bold">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h4 id="confirmTitle">Konfirmasi Akses</h4>
+      </div>
+      <p id="confirmMessage" class="text-xs text-gray-300 leading-relaxed">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+      <div class="flex justify-end gap-3 pt-2">
+        <button id="confirmBtnCancel" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-bold text-gray-300">Batal</button>
+        <button id="confirmBtnOk" class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. NAVBAR HEADER -->
+  <header class="bg-brandNav/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-40 shadow-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-3.5 cursor-pointer" onclick="showPage('home')">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 via-brandGold to-amber-300 flex items-center justify-center font-bold text-slate-950 border-2 border-amber-300 shadow-lg shadow-amber-500/10">
+          <i class="fa-solid fa-kaaba text-2xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-black tracking-wide text-brandGold uppercase leading-tight">SDIT WALADUN SHOLIHUN</h1>
+            <span class="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">Terakreditasi A</span>
+          </div>
+          <!-- REQ 2: Tagline Baru -->
+          <p id="navTagline" class="text-[11px] text-gray-400 font-medium hidden sm:block">Sekolah berbasis Tahfidz dan Kewirausahaan</p>
+        </div>
+      </div>
+
+      <!-- Navigation Desktop -->
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold">
+        <button onclick="scrollToSection('calculatorSection')" class="text-gray-300 hover:text-brandGold transition-colors flex items-center gap-1.5 py-2">
+          <i class="fa-solid fa-calculator text-brandGold"></i> Simulasi Biaya
+        </button>
+        <button onclick="scrollToSection('keunggulanSection')" class="text-gray-300 hover:text-brandGold transition-colors flex items-center gap-1.5 py-2">
+          <i class="fa-solid fa-star text-brandGold"></i> Keunggulan
+        </button>
+        <button onclick="openModal('petunjukModal')" class="text-gray-300 hover:text-brandGold transition-colors flex items-center gap-1.5 py-2">
+          <i class="fa-solid fa-circle-info text-brandGold"></i> Petunjuk
+        </button>
+        <button onclick="openModal('alurModal')" class="text-gray-300 hover:text-brandGold transition-colors flex items-center gap-1.5 py-2">
+          <i class="fa-solid fa-sitemap text-brandGold"></i> Alur PPDB
+        </button>
+        <button onclick="toggleAiChat()" class="text-gray-300 hover:text-brandGold transition-colors flex items-center gap-1.5 py-2">
+          <i class="fa-solid fa-robot text-brandGold"></i> Tanya Ustadz AI
+        </button>
+        <button onclick="openModal('kontakModal')" class="text-gray-300 hover:text-brandGold transition-colors flex items-center gap-1.5 py-2">
+          <i class="fa-brands fa-whatsapp text-emerald-400"></i> Kontak WA
+        </button>
+        
+        <button onclick="openLoginModal()" class="bg-gradient-to-r from-brandGold to-amber-500 hover:from-amber-400 hover:to-brandGold text-slate-950 font-extrabold px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 transition-all flex items-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i> Portal Akun / Login
+        </button>
+      </nav>
+
+      <!-- Mobile Hamburger Button -->
+      <div class="lg:hidden">
+        <button onclick="toggleMobileMenu()" class="text-gray-300 hover:text-brandGold text-2xl p-2 focus:outline-none">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-brandNav border-b border-gray-800 px-6 py-4 space-y-3 text-sm">
+      <button onclick="scrollToSection('calculatorSection'); toggleMobileMenu()" class="w-full text-left py-2 text-gray-300 hover:text-brandGold flex items-center gap-2">
+        <i class="fa-solid fa-calculator text-brandGold"></i> Simulasi & Kalkulator Biaya
+      </button>
+      <button onclick="scrollToSection('keunggulanSection'); toggleMobileMenu()" class="w-full text-left py-2 text-gray-300 hover:text-brandGold flex items-center gap-2">
+        <i class="fa-solid fa-star text-brandGold"></i> Keunggulan Sekolah
+      </button>
+      <button onclick="openModal('petunjukModal'); toggleMobileMenu()" class="w-full text-left py-2 text-gray-300 hover:text-brandGold flex items-center gap-2">
+        <i class="fa-solid fa-circle-info text-brandGold"></i> Petunjuk Pendaftaran
+      </button>
+      <button onclick="openModal('alurModal'); toggleMobileMenu()" class="w-full text-left py-2 text-gray-300 hover:text-brandGold flex items-center gap-2">
+        <i class="fa-solid fa-sitemap text-brandGold"></i> Alur Pendaftaran
+      </button>
+      <button onclick="toggleAiChat(); toggleMobileMenu()" class="w-full text-left py-2 text-gray-300 hover:text-brandGold flex items-center gap-2">
+        <i class="fa-solid fa-robot text-brandGold"></i> AI Assistant CS (Ustadz AI)
+      </button>
+      <button onclick="openModal('kontakModal'); toggleMobileMenu()" class="w-full text-left py-2 text-gray-300 hover:text-brandGold flex items-center gap-2">
+        <i class="fa-brands fa-whatsapp text-emerald-400"></i> Hubungi Panitia
+      </button>
+      <button onclick="openLoginModal(); toggleMobileMenu()" class="w-full bg-brandGold text-slate-950 font-bold py-3 rounded-xl text-center mt-2 shadow-md">
+        Portal Akun / Login
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-12">
+
+    <!-- PAGE 1: HOME PAGE -->
+    <div id="pageHome" class="space-y-12">
+      
+      <!-- HERO BANNER -->
+      <div class="relative bg-gradient-to-r from-heroBrown via-[#7a3908] to-heroBrownDark rounded-3xl p-6 sm:p-10 lg:p-12 shadow-2xl border border-amber-900/50 overflow-hidden glow-gold">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+          <div class="lg:col-span-8 space-y-6 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-amber-500/40 text-amber-300 text-xs font-bold">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+              Penerimaan Santri Baru T.A. 2026/2027 Dibuka
+            </div>
+
+            <!-- REQ 2: Tagline Utama -->
+            <h2 id="heroTagline" class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+              Sekolah berbasis Tahfidz dan Kewirausahaan
+            </h2>
+
+            <p class="text-amber-100/90 text-xs sm:text-sm md:text-base max-w-2xl leading-relaxed mx-auto lg:mx-0">
+              SDIT Waladun Sholihun memadukan Kurikulum Merdeka, Pembelajaran Al-Qur'an Metode UMMI, Pembentukan Karakter Kewirausahaan Islami, serta Ekstrakurikuler Panahan Berprestasi Tingkat Nasional.
+            </p>
+
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+              <button onclick="openFormRegister('Gelombang 1')" class="bg-gradient-to-r from-brandGold to-amber-500 hover:from-amber-400 hover:to-brandGold text-slate-950 font-black px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all flex items-center gap-3 group text-sm">
+                <i class="fa-solid fa-paper-plane group-hover:translate-x-1 transition-transform"></i> Daftar Santri Baru
+              </button>
+              <button onclick="scrollToSection('calculatorSection')" class="bg-black/40 hover:bg-black/60 text-amber-200 font-bold px-6 py-4 rounded-xl backdrop-blur-md border border-amber-500/30 transition-all flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-calculator text-brandGold"></i> Simulator Biaya & Cicilan
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick QR & Digital Flyer Card -->
+          <div class="lg:col-span-4">
+            <div class="bg-brandNav/90 backdrop-blur-lg rounded-2xl p-6 border border-gray-700/80 shadow-2xl space-y-4 text-center">
+              <div class="flex items-center justify-center gap-2 text-brandGold font-bold text-xs uppercase tracking-wider">
+                <i class="fa-solid fa-qrcode text-base"></i> Brosur Digital & QR Portal
+              </div>
+
+              <div class="bg-slate-950 p-4 rounded-xl border border-gray-800 flex flex-col items-center justify-center min-h-[160px]">
+                <div id="homeQrPlaceholder" class="p-2 bg-white rounded-lg shadow-md"></div>
+                <span class="text-[11px] text-gray-400 mt-2 font-mono">Scan untuk membuka portal di HP</span>
+              </div>
+
+              <div class="text-xs text-gray-300 space-y-1">
+                <p class="font-bold text-amber-300">Jadwal Pendaftaran:</p>
+                <p id="displayJadwalPendaftaranHome" class="text-[11px] text-gray-300 font-mono">1 Oktober - 30 November 2026</p>
+              </div>
+
+              <button onclick="openLoginModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-brandGold border border-gray-700 text-xs font-bold py-2.5 rounded-lg transition-all">
+                <i class="fa-solid fa-magnifying-glass mr-1"></i> Cek Status Pendaftaran Saya
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REQ 3: KEUNGGULAN SEKOLAH SECTION -->
+      <div id="keunggulanSection" class="space-y-6">
+        <div class="text-center max-w-2xl mx-auto space-y-2">
+          <span class="bg-brandGold/10 text-brandGold px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider border border-brandGold/30">Keunggulan Utama</span>
+          <h3 class="text-2xl md:text-3xl font-black text-white">Mengapa Memilih SDIT Waladun Sholihun?</h3>
+          <p class="text-gray-400 text-xs sm:text-sm">Pendidikan unggul terpadu yang membekali santri dengan Al-Qur'an, Kemandirian Ekonomi, dan Olahraga Sunnah Berprestasi.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Keunggulan 1: Metode UMMI -->
+          <div class="bg-brandNav rounded-2xl border border-gray-800 hover:border-brandGold/60 p-6 space-y-4 shadow-xl transition-all group hover:-translate-y-1">
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-brandGold flex items-center justify-center text-2xl font-bold border border-amber-500/30 group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-book-quran"></i>
+            </div>
+            <h4 class="text-lg font-black text-white group-hover:text-brandGold transition-colors">Metode UMMI</h4>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              Pembelajaran Al-Qur'an yang terstruktur, mudah, dan teruji secara nasional dengan target bacaan tartil, tajwid presisi, serta hafalan Al-Qur'an (Tahfidz) yang mutqin.
+            </p>
+          </div>
+
+          <!-- Keunggulan 2: Ekstrakurikuler Panahan -->
+          <div class="bg-brandNav rounded-2xl border border-gray-800 hover:border-brandGold/60 p-6 space-y-4 shadow-xl transition-all group hover:-translate-y-1">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl font-bold border border-emerald-500/30 group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-bullseye"></i>
+            </div>
+            <h4 class="text-lg font-black text-white group-hover:text-emerald-400 transition-colors">Ekskul Panahan Nasional</h4>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              Kegiatan ekstrakurikuler panahan berstandar atlet nasional. Melatih fokus, ketenangan mental, disiplin, dan menghidupkan olahraga yang disunnahkan Rasulullah SAW.
+            </p>
+          </div>
+
+          <!-- Keunggulan 3: Kewirausahaan Karakteristik & Praktek -->
+          <div class="bg-brandNav rounded-2xl border border-gray-800 hover:border-brandGold/60 p-6 space-y-4 shadow-xl transition-all group hover:-translate-y-1">
+            <div class="w-14 h-14 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-2xl font-bold border border-blue-500/30 group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-store"></i>
+            </div>
+            <h4 class="text-lg font-black text-white group-hover:text-blue-400 transition-colors">Kewirausahaan Karakter & Praktek</h4>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              Pendidikan kewirausahaan islami yang mengasah jiwa kepemimpinan, karakteristik pantang menyerah, serta kegiatan *Market Day* dan praktek bisnis nyata sejak dini.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- GELOMBANG SELECTION SECTION (REQ 4: Fleksibel Biaya via Admin) -->
+      <div id="sectionGelombang" class="space-y-6">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+          <span class="bg-brandGold/10 text-brandGold px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider border border-brandGold/30">Jalur Pendaftaran</span>
+          <h3 class="text-2xl md:text-3xl font-black text-white">Gelombang Penerimaan Santri</h3>
+          <p class="text-gray-400 text-xs sm:text-sm">Pilih jalur pendaftaran sesuai kebutuhan & dapatkan penawaran investasi pendidikan terbaik</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Gelombang 1 Card -->
+          <div class="bg-brandNav rounded-2xl border-2 border-brandGold/60 hover:border-brandGold p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden transition-all group hover:-translate-y-1">
+            <div class="absolute top-0 right-0 bg-brandGold text-slate-950 text-[10px] font-black px-4 py-1 rounded-bl-xl uppercase tracking-wider">
+              Diskon Early Bird
+            </div>
+
+            <div class="space-y-2">
+              <span class="text-brandGold font-bold text-xs uppercase tracking-wider">Jalur Utama / Prioritas</span>
+              <h4 class="text-2xl font-black text-white">Gelombang 1 (Early Bird)</h4>
+              <p class="text-xs text-gray-400">Terbuka untuk Umum & Alumni TK / RA Mitra</p>
+            </div>
+
+            <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800 space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-gray-400">Estimasi Uang Masuk Utama:</span>
+                <span id="displayBiayaG1" class="text-xl font-black text-brandGold">Rp 3.500.000</span>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-gray-400 border-t border-gray-800 pt-2">
+                <span><i class="fa-solid fa-users text-amber-500"></i> Status: <strong class="text-white">Gelombang Utama</strong></span>
+                <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check"></i> Masih Dibuka</span>
+              </div>
+            </div>
+
+            <ul class="space-y-2 text-xs text-gray-300">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brandGold"></i> Potongan Biaya Infaq Seragam Rp 300.000</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brandGold"></i> Bebas Biaya Tes Pemetaan Karakter</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brandGold"></i> Prioritas Pemilihan Sesi Wawancara</li>
+            </ul>
+
+            <button onclick="openFormRegister('Gelombang 1')" class="w-full bg-brandGold hover:bg-brandGoldHover text-slate-950 font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-user-plus"></i> Daftar Gelombang 1 Now
+            </button>
+          </div>
+
+          <!-- Gelombang 2 Card -->
+          <div class="bg-brandNav rounded-2xl border border-gray-800 hover:border-gray-700 p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden transition-all group hover:-translate-y-1">
+            <div class="space-y-2">
+              <span class="text-gray-400 font-bold text-xs uppercase tracking-wider">Jalur Reguler</span>
+              <h4 class="text-2xl font-black text-white">Gelombang 2 (Reguler)</h4>
+              <p class="text-xs text-gray-400">Dibuka jika kuota Gelombang 1 masih tersedia</p>
+            </div>
+
+            <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800 space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-gray-400">Estimasi Uang Masuk Utama:</span>
+                <span id="displayBiayaG2" class="text-xl font-black text-white">Rp 4.000.000</span>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-gray-400 border-t border-gray-800 pt-2">
+                <span><i class="fa-solid fa-users text-amber-500"></i> Status: <strong class="text-white">Jalur Reguler</strong></span>
+                <span class="text-amber-400 font-semibold"><i class="fa-solid fa-clock"></i> Kuota Terbatas</span>
+              </div>
+            </div>
+
+            <ul class="space-y-2 text-xs text-gray-300">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gray-400"></i> Fasilitas Cicilan hingga 12 Bulan</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gray-400"></i> Modul Pembelajaran & Seragam Lengkap</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gray-400"></i> Pembinaan Tahfidz & Kewirausahaan</li>
+            </ul>
+
+            <button onclick="openFormRegister('Gelombang 2')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl border border-gray-700 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-user-plus"></i> Daftar Gelombang 2
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURE 2 & REQ 6: SIMULATOR & KALKULATOR BIAYA & CICILAN INTERAKTIF -->
+      <div id="calculatorSection" class="bg-brandNav rounded-3xl p-6 sm:p-10 border border-gray-800 shadow-2xl space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-800 pb-6">
+          <div>
+            <span class="text-xs font-bold text-brandGold uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-sliders"></i> Simulation Engine
+            </span>
+            <h3 class="text-2xl font-black text-white mt-1">Kalkulator Simulasi Biaya & Cicilan PPDB</h3>
+            <p class="text-xs text-gray-400">Hitung estimasi rincian biaya, potongan beasiswa, serta skema cicilan bulanan secara realtime (Disesuaikan dengan tarif Portal Admin).</p>
+          </div>
+          <button onclick="applySimulatedToReg()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg transition-all flex items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i> Gunakan Simulasi Ini Pada Form
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- Input Options Column -->
+          <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Gelombang Selection -->
+            <div>
+              <label class="block text-xs font-bold text-gray-300 mb-2">1. Pilih Gelombang Pendaftaran</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="cursor-pointer bg-gray-900 border border-gray-800 p-3 rounded-xl flex items-center gap-3 has-[:checked]:border-brandGold has-[:checked]:bg-brandGold/10 transition-all">
+                  <input type="radio" name="simGelombang" value="1" checked onchange="recalculateSimulation()" class="accent-brandGold">
+                  <div>
+                    <p class="text-xs font-bold text-white">Gelombang 1</p>
+                    <p class="text-[10px] text-gray-400">Early Bird Promo</p>
+                  </div>
+                </label>
+                <label class="cursor-pointer bg-gray-900 border border-gray-800 p-3 rounded-xl flex items-center gap-3 has-[:checked]:border-brandGold has-[:checked]:bg-brandGold/10 transition-all">
+                  <input type="radio" name="simGelombang" value="2" onchange="recalculateSimulation()" class="accent-brandGold">
+                  <div>
+                    <p class="text-xs font-bold text-white">Gelombang 2</p>
+                    <p class="text-[10px] text-gray-400">Reguler</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Beasiswa & Diskon -->
+            <div>
+              <label class="block text-xs font-bold text-gray-300 mb-2">2. Pilihan Potongan / Beasiswa (Optional)</label>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2 bg-gray-900/60 p-2.5 rounded-lg border border-gray-800 text-xs text-gray-300 cursor-pointer">
+                  <input type="checkbox" id="simDiscountAlumni" onchange="recalculateSimulation()" class="rounded accent-brandGold">
+                  <span>Alumni TK / RA Mitra (-Rp 300.000)</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 p-2.5 rounded-lg border border-gray-800 text-xs text-gray-300 cursor-pointer">
+                  <input type="checkbox" id="simDiscountTahfidz" onchange="recalculateSimulation()" class="rounded accent-brandGold">
+                  <span>Beasiswa Hafiz / Hafizah Minimal Juz 30 (-Rp 500.000)</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 p-2.5 rounded-lg border border-gray-800 text-xs text-gray-300 cursor-pointer">
+                  <input type="checkbox" id="simDiscountSibling" onchange="recalculateSimulation()" class="rounded accent-brandGold">
+                  <span>Diskon Saudara Kandung (-Rp 250.000)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Layanan Tambahan (Add-ons) -->
+            <div>
+              <label class="block text-xs font-bold text-gray-300 mb-2">3. Layanan Opsional Tambahan (Per Bulan)</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <label class="flex items-center gap-2 bg-gray-900/60 p-2.5 rounded-lg border border-gray-800 text-gray-300 cursor-pointer">
+                  <input type="checkbox" id="simAddCatering" onchange="recalculateSimulation()" class="rounded accent-brandGold">
+                  <span>Catering Makan Siang Halal (+Rp 350.000/bln)</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 p-2.5 rounded-lg border border-gray-800 text-gray-300 cursor-pointer">
+                  <input type="checkbox" id="simAddShuttle" onchange="recalculateSimulation()" class="rounded accent-brandGold">
+                  <span>Antar-Jemput Shuttle (+Rp 400.000/bln)</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 p-2.5 rounded-lg border border-gray-800 text-gray-300 cursor-pointer">
+                  <input type="checkbox" id="simAddTahfidzIntensive" onchange="recalculateSimulation()" class="rounded accent-brandGold">
+                  <span>Program Tahfidz Intensif (+Rp 200.000/bln)</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 p-2.5 rounded-lg border border-gray-800 text-gray-300 cursor-pointer">
+                  <input type="checkbox" id="simAddPanahan" onchange="recalculateSimulation()" class="rounded accent-brandGold">
+                  <span>Ekskul Panahan (+Rp 150.000/bln)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Skema Cicilan -->
+            <div>
+              <label class="block text-xs font-bold text-gray-300 mb-2">4. Pilih Skema Pembayaran</label>
+              <select id="simTenor" onchange="recalculateSimulation()" class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brandGold">
+                <option value="1">Lunas Sekaligus (Cash - Potongan Tambahan Rp 200.000)</option>
+                <option value="3">Cicilan 3x (3 Bulan)</option>
+                <option value="6">Cicilan 6x (6 Bulan)</option>
+                <option value="12">Cicilan 12x (1 Tahun Ajaran)</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Calculation Output Column -->
+          <div class="lg:col-span-5 bg-gray-950 p-6 rounded-2xl border border-gray-800 space-y-5 flex flex-col justify-between">
+            <div class="space-y-4">
+              <h4 class="text-sm font-bold text-brandGold flex items-center justify-between border-b border-gray-800 pb-3">
+                <span>Rincian Hasil Simulasi</span>
+                <span class="text-[10px] bg-brandGold/20 px-2 py-0.5 rounded text-brandGold font-mono">Realtime Live</span>
+              </h4>
+
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between text-gray-400">
+                  <span>Biaya Pokok Masuk:</span>
+                  <span id="simValBase" class="text-white font-mono">Rp 3.500.000</span>
+                </div>
+                <div class="flex justify-between text-emerald-400">
+                  <span>Total Potongan Diskon:</span>
+                  <span id="simValDiscount" class="font-mono">- Rp 0</span>
+                </div>
+                <div class="flex justify-between text-gray-400">
+                  <span>Total Biaya Masuk Bersih:</span>
+                  <span id="simValNetBase" class="text-white font-bold font-mono">Rp 3.500.000</span>
+                </div>
+                <div class="flex justify-between text-amber-300">
+                  <span>Layanan Opsional (Bulanan):</span>
+                  <span id="simValMonthlyAddons" class="font-mono">Rp 0 / bln</span>
+                </div>
+              </div>
+
+              <div class="bg-brandCard p-4 rounded-xl border border-amber-500/30 space-y-2">
+                <div class="text-[11px] text-gray-400 uppercase font-bold">Simulasi Angsuran Utama</div>
+                <div class="flex justify-between items-baseline">
+                  <span id="simValTenorLabel" class="text-xs text-gray-300">Setoran per Bulan:</span>
+                  <span id="simValInstallment" class="text-2xl font-black text-brandGold font-mono">Rp 3.500.000</span>
+                </div>
+                <p id="simValNote" class="text-[10px] text-gray-400 italic">*Sudah termasuk SPP standar bulan pertama.</p>
+              </div>
+
+              <div class="space-y-1 text-[11px] text-gray-400">
+                <p class="font-bold text-gray-300">Jadwal Jatuh Tempo Cicilan Pertama:</p>
+                <p id="simValDueDate" class="text-brandGold font-mono">-</p>
+              </div>
+            </div>
+
+            <button onclick="scrollToSection('sectionGelombang')" class="w-full bg-slate-800 hover:bg-slate-700 text-gray-200 text-xs font-bold py-3 rounded-xl transition-all border border-gray-700">
+              <i class="fa-solid fa-arrow-up mr-1"></i> Kembali Ke Pilihan Gelombang
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAGE 2: FORM REGISTRATION PAGE -->
+    <div id="pageFormRegister" class="hidden max-w-4xl mx-auto bg-brandNav rounded-3xl p-6 sm:p-10 border border-gray-800 shadow-2xl space-y-8">
+      <div class="flex justify-between items-center border-b border-gray-800 pb-5">
+        <div>
+          <span class="text-xs font-extrabold text-brandGold uppercase tracking-wider">Formulir PPDB Digital</span>
+          <h3 class="text-2xl font-black text-white">Pendaftaran Santri Baru T.A. 2026/2027</h3>
+        </div>
+        <button onclick="showPage('home')" class="text-gray-400 hover:text-white text-xl p-2">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="registrationForm" onsubmit="handleRegisterSubmit(event)" class="space-y-8">
+        
+        <!-- Gelombang & Program -->
+        <div class="bg-gray-900/80 p-5 rounded-2xl border border-gray-800 space-y-4">
+          <label class="block text-xs font-extrabold text-brandGold uppercase tracking-wider">Pilihan Gelombang & Jalur Pendaftaran *</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <select id="regGelombang" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brandGold">
+              <option value="Gelombang 1">Gelombang 1 (Promo Early Bird)</option>
+              <option value="Gelombang 2">Gelombang 2 (Reguler)</option>
+            </select>
+            <select id="regSkemaPembayaran" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brandGold">
+              <option value="Lunas">Pembayaran Cash Lunas</option>
+              <option value="Cicilan 3x">Cicilan 3 Bulan</option>
+              <option value="Cicilan 6x">Cicilan 6 Bulan</option>
+              <option value="Cicilan 12x">Cicilan 12 Bulan</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Data Santri -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-bold text-brandGold flex items-center gap-2 border-b border-gray-800 pb-2 uppercase tracking-wider">
+            <i class="fa-solid fa-child text-base"></i> Identitas Calon Santri
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Nama Lengkap Siswa *</label>
+              <input type="text" id="regNama" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Sesuai Akta Kelahiran">
+            </div>
+
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">NIK Siswa (16 Digit) *</label>
+              <input type="text" id="regNik" maxlength="16" required pattern="[0-9]{16}" class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none font-mono" placeholder="3171000xxxxxxxxx">
+            </div>
+
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Jenis Kelamin *</label>
+              <select id="regJk" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none">
+                <option value="Laki-Laki">Laki-Laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Tempat & Tanggal Lahir *</label>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="text" id="regTempatLahir" required class="bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Kota Lahir">
+                <input type="date" id="regTglLahir" required class="bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none">
+              </div>
+            </div>
+
+            <!-- REQ 1: DATA ASAL TK / RA -->
+            <div class="md:col-span-2">
+              <label class="block text-xs text-gray-300 mb-1">Data Asal TK / RA *</label>
+              <input type="text" id="regAsalTk" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Contoh: TK IT Bina Insani / RA Perwanida">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-gray-300 mb-1">Alamat Tinggal Lengkap *</label>
+            <textarea id="regAlamat" rows="2" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota"></textarea>
+          </div>
+        </div>
+
+        <!-- Data Orang Tua -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-bold text-brandGold flex items-center gap-2 border-b border-gray-800 pb-2 uppercase tracking-wider">
+            <i class="fa-solid fa-users text-base"></i> Identitas Orang Tua / Wali Murid
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Nama Ayah *</label>
+              <input type="text" id="regNamaAyah" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Nama Lengkap Ayah">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">No. WhatsApp Ayah *</label>
+              <input type="tel" id="regHpAyah" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none font-mono" placeholder="08xxxxxxxxxx">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Pekerjaan Ayah *</label>
+              <input type="text" id="regPekerjaanAyah" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Pekerjaan">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Nama Ibu *</label>
+              <input type="text" id="regNamaIbu" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Nama Lengkap Ibu">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">No. WhatsApp Ibu</label>
+              <input type="tel" id="regHpIbu" class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none font-mono" placeholder="08xxxxxxxxxx">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Pekerjaan Ibu *</label>
+              <input type="text" id="regPekerjaanIbu" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Pekerjaan">
+            </div>
+          </div>
+        </div>
+
+        <!-- REQ 5: UPLOAD DOKUMEN DIGITAL (AKTA, KK, KTP ORTU, PAS FOTO 3X4) -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-bold text-brandGold flex items-center gap-2 border-b border-gray-800 pb-2 uppercase tracking-wider">
+            <i class="fa-solid fa-file-arrow-up text-base"></i> Upload Dokumen Berkas Digital
+          </h4>
+          <p class="text-xs text-gray-400">Unggah berkas pendaftaran calon santri (Format Foto JPG/PNG, Max 2MB per file).</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Upload Akta -->
+            <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-2">
+              <span class="text-xs font-bold text-gray-300 block">Akta Kelahiran *</span>
+              <input type="file" id="fileAkta" accept="image/*" onchange="previewFile(this, 'previewAkta')" class="hidden">
+              <label for="fileAkta" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-brandGold text-[11px] font-bold px-3 py-2 rounded-lg block transition-all border border-gray-700">
+                <i class="fa-solid fa-upload mr-1"></i> Pilih Berkas
+              </label>
+              <div id="previewAkta" class="text-[10px] text-gray-400 truncate">Belum diunggah</div>
+            </div>
+
+            <!-- Upload KK -->
+            <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-2">
+              <span class="text-xs font-bold text-gray-300 block">Kartu Keluarga (KK) *</span>
+              <input type="file" id="fileKk" accept="image/*" onchange="previewFile(this, 'previewKk')" class="hidden">
+              <label for="fileKk" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-brandGold text-[11px] font-bold px-3 py-2 rounded-lg block transition-all border border-gray-700">
+                <i class="fa-solid fa-upload mr-1"></i> Pilih Berkas
+              </label>
+              <div id="previewKk" class="text-[10px] text-gray-400 truncate">Belum diunggah</div>
+            </div>
+
+            <!-- Upload KTP Ortu -->
+            <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-2">
+              <span class="text-xs font-bold text-gray-300 block">KTP Orang Tua *</span>
+              <input type="file" id="fileKtp" accept="image/*" onchange="previewFile(this, 'previewKtp')" class="hidden">
+              <label for="fileKtp" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-brandGold text-[11px] font-bold px-3 py-2 rounded-lg block transition-all border border-gray-700">
+                <i class="fa-solid fa-upload mr-1"></i> Pilih Berkas
+              </label>
+              <div id="previewKtp" class="text-[10px] text-gray-400 truncate">Belum diunggah</div>
+            </div>
+
+            <!-- Upload Pas Foto -->
+            <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-2">
+              <span class="text-xs font-bold text-gray-300 block">Pas Foto 3x4 Berwarna *</span>
+              <input type="file" id="fileFoto" accept="image/*" onchange="previewFile(this, 'previewFoto')" class="hidden">
+              <label for="fileFoto" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-brandGold text-[11px] font-bold px-3 py-2 rounded-lg block transition-all border border-gray-700">
+                <i class="fa-solid fa-upload mr-1"></i> Pilih Foto
+              </label>
+              <div id="previewFoto" class="text-[10px] text-gray-400 truncate">Belum diunggah</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- REQ 8: BOOKING JADWAL TES PEMETAAN (Dinamis dari Admin) -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-bold text-brandGold flex items-center gap-2 border-b border-gray-800 pb-2 uppercase tracking-wider">
+            <i class="fa-solid fa-calendar-check text-base"></i> Booking Jadwal Tes Pemetaan & Wawancara
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Tanggal Tes Pemetaan *</label>
+              <select id="regJadwalTanggal" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brandGold">
+                <!-- Dynamically populated from JS config -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-300 mb-1">Sesi Jam Pemetaan *</label>
+              <select id="regJadwalSesi" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brandGold">
+                <option value="Sesi 1 (08.00 - 10.00 WIB)">Sesi 1 (08.00 - 10.00 WIB)</option>
+                <option value="Sesi 2 (10.30 - 12.30 WIB)">Sesi 2 (10.30 - 12.30 WIB)</option>
+                <option value="Sesi 3 (13.30 - 15.30 WIB)">Sesi 3 (13.30 - 15.30 WIB)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-4 border-t border-gray-800">
+          <button type="button" onclick="showPage('home')" class="w-1/3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3.5 rounded-xl transition-all text-xs">
+            Batal
+          </button>
+          <button type="submit" class="w-2/3 bg-gradient-to-r from-brandGold to-amber-500 hover:from-amber-400 hover:to-brandGold text-slate-950 font-black py-3.5 rounded-xl shadow-xl transition-all text-xs">
+            Kirim Pendaftaran & Dapatkan Kartu Ujian
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- PAGE 3: DASHBOARD WALI SAN TRI -->
+    <div id="pageDashboardWali" class="hidden space-y-8">
+      
+      <!-- Top Profile Card -->
+      <div class="bg-brandNav rounded-3xl p-6 border border-gray-800 flex flex-wrap justify-between items-center gap-4 shadow-xl">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-brandGold/20 border border-brandGold/40 flex items-center justify-center text-brandGold font-bold text-2xl">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <span class="text-[10px] text-brandGold font-bold uppercase tracking-wider bg-brandGold/10 px-2 py-0.5 rounded border border-brandGold/20">Portal Wali Santri</span>
+            <h3 id="waliStudentName" class="text-2xl font-black text-white mt-1">Nama Santri</h3>
+            <p id="waliRegId" class="text-xs text-gray-400 font-mono">ID Registrasi: PPDB-000000</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <button onclick="openExamCardModal()" class="bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/40 text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+            <i class="fa-solid fa-id-card"></i> Cetak Kartu Ujian
+          </button>
+          <button onclick="logout()" class="bg-rose-900/40 hover:bg-rose-900/80 text-rose-300 px-4 py-2.5 rounded-xl text-xs font-bold transition-all border border-rose-800">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- FEATURE 5: TRACKER STATUS PENDAFTARAN REALTIME (PROGRESS STEPS) -->
+      <div class="bg-brandNav rounded-3xl p-6 border border-gray-800 space-y-6 shadow-xl">
+        <h4 class="text-sm font-bold text-brandGold uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-bars-progress"></i> Progress Live Timeline Pendaftaran
+        </h4>
+
+        <div id="waliProgressSteps" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- Summary Cards -->
+        <div class="bg-brandNav p-6 rounded-2xl border border-gray-800 space-y-2">
+          <span class="text-gray-400 text-xs font-bold">Pilihan Gelombang</span>
+          <p id="waliGelombang" class="text-lg font-bold text-white">-</p>
+        </div>
+
+        <div class="bg-brandNav p-6 rounded-2xl border border-gray-800 space-y-2">
+          <span class="text-gray-400 text-xs font-bold">Asal TK / RA</span>
+          <p id="waliAsalTk" class="text-lg font-bold text-brandGold truncate">-</p>
+        </div>
+
+        <div class="bg-brandNav p-6 rounded-2xl border border-gray-800 space-y-2">
+          <span class="text-gray-400 text-xs font-bold">Status Verifikasi Berkas</span>
+          <p id="waliStatusDokumen" class="text-lg font-bold text-amber-400">-</p>
+        </div>
+
+        <div class="bg-brandNav p-6 rounded-2xl border border-gray-800 space-y-2">
+          <span class="text-gray-400 text-xs font-bold">Sisa Tagihan Infaq Masuk</span>
+          <p id="waliSisaBiaya" class="text-2xl font-black text-brandGold font-mono">Rp 0</p>
+        </div>
+
+      </div>
+
+      <!-- REQ 7: Bank Transfer & Payment Details (Fleksibel dari Admin) -->
+      <div class="bg-brandNav p-6 sm:p-8 rounded-3xl border border-gray-800 space-y-6 shadow-xl">
+        <h4 class="text-base font-bold text-white flex items-center gap-2 border-b border-gray-800 pb-4">
+          <i class="fa-solid fa-wallet text-brandGold"></i> Rekening Resmi Pembayaran & Konfirmasi Transfer
+        </h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-gray-950 p-5 rounded-2xl border border-gray-800 space-y-3 text-xs">
+            <div class="flex justify-between">
+              <span class="text-gray-400">Bank Tujuan:</span>
+              <span id="waliBankName" class="font-bold text-white">Bank Syariah Indonesia (BSI)</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-400">No. Rekening:</span>
+              <span id="waliBankRek" class="font-mono font-bold text-brandGold text-base">7123-4567-8901</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Atas Nama:</span>
+              <span id="waliBankAtasNama" class="font-bold text-white">Yayasan SDIT Waladun Sholihun</span>
+            </div>
+          </div>
+
+          <div class="space-y-3 text-xs text-gray-300">
+            <p>Setelah melakukan pembayaran transfer, harap kirimkan bukti transfer melalui WhatsApp resmi Panitia PPDB.</p>
+            <a id="btnWaKonfirmasi" href="#" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-xs">
+              <i class="fa-brands fa-whatsapp text-base"></i> Konfirmasi Pembayaran via WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAGE 4: DASHBOARD ADMIN SUPER CANGGIH -->
+    <div id="pageDashboardAdmin" class="hidden space-y-8">
+      
+      <!-- Top Banner -->
+      <div class="bg-brandNav p-6 rounded-3xl border border-gray-800 flex flex-wrap justify-between items-center gap-4 shadow-2xl">
+        <div>
+          <span class="bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Super Admin Console</span>
+          <h3 class="text-2xl font-black text-white mt-1">Panel Control Management PPDB</h3>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- CSV Export Button -->
+          <button onclick="exportDataToCSV()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg transition-all flex items-center gap-2">
+            <i class="fa-solid fa-file-csv"></i> Ekspor CSV / Excel
+          </button>
+          <button onclick="openModal('adminAccountModal')" class="bg-slate-800 hover:bg-slate-700 text-brandGold border border-gray-700 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all">
+            <i class="fa-solid fa-user-gear"></i> Ubah Password Admin
+          </button>
+          <button onclick="confirmResetAllData()" class="bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all">
+            <i class="fa-solid fa-trash"></i> Reset Data
+          </button>
+          <button onclick="logout()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- FEATURE 6: EXECUTIVE KPI STATISTIC CARDS -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="bg-brandNav p-5 rounded-2xl border border-gray-800 space-y-1">
+          <span class="text-[11px] text-gray-400 font-bold uppercase">Total Pendaftar</span>
+          <p id="kpiTotalPendaftar" class="text-2xl font-black text-white">0</p>
+        </div>
+        <div class="bg-brandNav p-5 rounded-2xl border border-gray-800 space-y-1">
+          <span class="text-[11px] text-gray-400 font-bold uppercase">Terverifikasi</span>
+          <p id="kpiTerverifikasi" class="text-2xl font-black text-emerald-400">0</p>
+        </div>
+        <div class="bg-brandNav p-5 rounded-2xl border border-gray-800 space-y-1">
+          <span class="text-[11px] text-gray-400 font-bold uppercase">Diterima</span>
+          <p id="kpiDiterima" class="text-2xl font-black text-blue-400">0</p>
+        </div>
+        <div class="bg-brandNav p-5 rounded-2xl border border-gray-800 space-y-1">
+          <span class="text-[11px] text-gray-400 font-bold uppercase">Status Lunas</span>
+          <p id="kpiLunas" class="text-2xl font-black text-amber-400">0</p>
+        </div>
+        <div class="bg-brandNav p-5 rounded-2xl border border-gray-800 space-y-1 col-span-2 lg:col-span-1">
+          <span class="text-[11px] text-gray-400 font-bold uppercase">Total Infaq Masuk</span>
+          <p id="kpiTotalRevenue" class="text-xl font-black text-brandGold font-mono">Rp 0</p>
+        </div>
+      </div>
+
+      <!-- ADMIN FLEKSIBEL CONTROLS (REQ 4, 6, 7, 8) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- 1. Estimasi Gelombang & Rincian Biaya Fleksibel -->
+        <div class="bg-brandNav p-6 rounded-3xl border border-gray-800 space-y-4 shadow-xl">
+          <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+            <h4 class="text-xs font-bold text-brandGold uppercase flex items-center gap-2">
+              <i class="fa-solid fa-coins"></i> Estimasi Biaya & Gelombang
+            </h4>
+            <span class="text-[9px] bg-brandGold/20 text-brandGold px-2 py-0.5 rounded font-mono">Dynamic Settings</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block text-gray-400 mb-1">Estimasi Gel. 1 (Rp)</label>
+              <input type="number" id="adminBiayaGel1" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Estimasi Gel. 2 (Rp)</label>
+              <input type="number" id="adminBiayaGel2" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Seragam Lengkap</label>
+              <input type="number" id="adminBiayaSeragam" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Buku & Modul</label>
+              <input type="number" id="adminBiayaBuku" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Sarpras / Gedung</label>
+              <input type="number" id="adminBiayaSarpras" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">SPP Bulan Juli</label>
+              <input type="number" id="adminBiayaSpp" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none">
+            </div>
+          </div>
+
+          <button onclick="saveAdminSettings()" class="w-full bg-brandGold hover:bg-brandGoldHover text-slate-950 text-xs font-bold py-2.5 rounded-xl transition-all">
+            <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Setelan Biaya
+          </button>
+        </div>
+
+        <!-- 2. Setelan Rekening Sekolah Fleksibel (REQ 7) -->
+        <div class="bg-brandNav p-6 rounded-3xl border border-gray-800 space-y-4 shadow-xl">
+          <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+            <h4 class="text-xs font-bold text-brandGold uppercase flex items-center gap-2">
+              <i class="fa-solid fa-building-columns"></i> Rekening Bank Sekolah
+            </h4>
+            <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-mono">Fleksibel</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block text-gray-400 mb-1">Nama Bank Sekolah</label>
+              <input type="text" id="adminBankName" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none" placeholder="Contoh: Bank Syariah Indonesia (BSI)">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Nomor Rekening</label>
+              <input type="text" id="adminBankRek" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none font-mono" placeholder="7123-4567-8901">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Atas Nama Rekening</label>
+              <input type="text" id="adminBankAtasNama" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none" placeholder="Yayasan SDIT Waladun Sholihun">
+            </div>
+          </div>
+
+          <button onclick="saveAdminSettings()" class="w-full bg-brandGold hover:bg-brandGoldHover text-slate-950 text-xs font-bold py-2.5 rounded-xl transition-all">
+            <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Rekening Bank
+          </button>
+        </div>
+
+        <!-- 3. Setelan Jadwal Pendaftaran, Tes & Ruang Tes (REQ 8) -->
+        <div class="bg-brandNav p-6 rounded-3xl border border-gray-800 space-y-4 shadow-xl">
+          <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+            <h4 class="text-xs font-bold text-brandGold uppercase flex items-center gap-2">
+              <i class="fa-solid fa-calendar-days"></i> Jadwal & Ruang Tes
+            </h4>
+            <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded font-mono">Jadwal Portal</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block text-gray-400 mb-1">Jadwal Pendaftaran</label>
+              <input type="text" id="adminJadwalPendaftaran" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none" placeholder="1 Oktober - 30 November 2026">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Pilihan Tanggal Tes Pemetaan (Pisahkan dg koma)</label>
+              <textarea id="adminJadwalTesOptions" rows="2" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none" placeholder="Sabtu 10 Okt 2026, Minggu 11 Okt 2026"></textarea>
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Ruang Tes Pemetaan</label>
+              <input type="text" id="adminRuangTes" class="w-full bg-brandDark border border-gray-700 rounded-xl p-2 text-white focus:border-brandGold focus:outline-none" placeholder="Ruang Al-Ghazali (Lantai 2)">
+            </div>
+          </div>
+
+          <button onclick="saveAdminSettings()" class="w-full bg-brandGold hover:bg-brandGoldHover text-slate-950 text-xs font-bold py-2.5 rounded-xl transition-all">
+            <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Jadwal & Ruangan
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Payment Processing Panel -->
+      <div class="bg-brandNav p-6 rounded-3xl border border-gray-800 space-y-4 shadow-xl">
+        <h4 class="text-sm font-bold text-brandGold flex items-center gap-2">
+          <i class="fa-solid fa-receipt"></i> Input Pembayaran Santri & Cetak Kwitansi
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input type="text" id="payIdReg" placeholder="ID Reg (PPDB-xxxx)" class="bg-brandDark border border-gray-700 rounded-xl p-2.5 text-xs text-white focus:border-brandGold focus:outline-none font-mono">
+          <input type="number" id="payNominal" placeholder="Nominal Bayar (Rp)" class="bg-brandDark border border-gray-700 rounded-xl p-2.5 text-xs text-white focus:border-brandGold focus:outline-none font-mono">
+          <select id="payTipe" class="bg-brandDark border border-gray-700 rounded-xl p-2.5 text-xs text-white focus:border-brandGold focus:outline-none">
+            <option value="Cicilan Infaq Masuk">Cicilan Infaq Masuk</option>
+            <option value="Pelunasan Total">Pelunasan Total</option>
+          </select>
+        </div>
+        <button onclick="submitPaymentProcess()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-print"></i> Proses Pembayaran & Cetak Kwitansi PDF
+        </button>
+      </div>
+
+      <!-- REQ 1 & 9: Database Pendaftar Santri Table dengan Berkas Upload & Asal TK/RA -->
+      <div class="bg-brandNav rounded-3xl border border-gray-800 p-6 space-y-4 shadow-2xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h4 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-table-list text-brandGold"></i> Database Calon Santri & Berkas Uploaded
+          </h4>
+
+          <!-- Filter & Search Controls -->
+          <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <input type="text" id="adminSearchInput" oninput="renderAdminTable()" placeholder="Cari nama, TK, NIK, ID..." class="bg-brandDark border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:border-brandGold focus:outline-none w-full sm:w-48">
+            <select id="adminFilterStatus" onchange="renderAdminTable()" class="bg-brandDark border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+              <option value="ALL">Semua Status</option>
+              <option value="LUNAS">LUNAS</option>
+              <option value="BELUM LUNAS">BELUM LUNAS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-gray-300">
+            <thead class="bg-gray-950 text-brandGold uppercase font-bold border-b border-gray-800">
+              <tr>
+                <th class="p-3">ID Reg</th>
+                <th class="p-3">Nama Santri</th>
+                <!-- REQ 1 -->
+                <th class="p-3">Asal TK / RA</th>
+                <th class="p-3">Gel.</th>
+                <th class="p-3">No. WA Ortu</th>
+                <!-- REQ 9 -->
+                <th class="p-3">Berkas Upload (Akta/KK/KTP/Foto)</th>
+                <th class="p-3">Status Bayar</th>
+                <th class="p-3">Sisa Tagihan</th>
+                <th class="p-3 text-center">Aksi Detail</th>
+              </tr>
+            </thead>
+            <tbody id="tableSiswaBody" class="divide-y divide-gray-800/60">
+              <!-- Populated dynamically via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- REQ 10: PRINTABLE RECEIPT CONTAINER (PDF / PRINT OUT) -->
+    <div id="printableReceipt" class="hidden bg-white text-slate-900 rounded-2xl p-8 max-w-2xl mx-auto shadow-2xl space-y-6">
+      <div class="flex justify-between items-center border-b-2 border-slate-900 pb-4">
+        <div>
+          <h2 class="text-xl font-black text-slate-900 uppercase">SDIT WALADUN SHOLIHUN</h2>
+          <p class="text-xs text-slate-600">Sekolah berbasis Tahfidz dan Kewirausahaan | WA: 085712822334</p>
+        </div>
+        <div class="text-right">
+          <span class="bg-slate-900 text-white text-xs px-3 py-1 font-bold rounded">KWITANSI RESMI</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-xs">
+        <div>
+          <p class="text-slate-500">No. Transaksi:</p>
+          <p id="recTrxId" class="font-bold text-sm text-slate-900 font-mono">-</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Tanggal:</p>
+          <p id="recDate" class="font-bold text-sm text-slate-900">-</p>
+        </div>
+        <div>
+          <p class="text-slate-500">Nama Santri:</p>
+          <p id="recStudentName" class="font-bold text-sm text-slate-900">-</p>
+        </div>
+        <div>
+          <p class="text-slate-500">ID Registrasi:</p>
+          <p id="recStudentId" class="font-bold text-sm text-slate-900 font-mono">-</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-100 p-4 rounded-xl space-y-2 text-xs">
+        <div class="flex justify-between">
+          <span>Tipe Pembayaran:</span>
+          <span id="recType" class="font-bold">-</span>
+        </div>
+        <div class="flex justify-between text-base border-t border-slate-300 pt-2 font-bold">
+          <span>Jumlah Dibayar:</span>
+          <span id="recAmount" class="text-emerald-700 font-mono">Rp 0</span>
+        </div>
+        <div class="flex justify-between text-xs text-slate-600">
+          <span>Sisa Tagihan Infaq:</span>
+          <span id="recRemaining" class="font-mono">Rp 0</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-end pt-4">
+        <div class="text-center">
+          <div id="receiptQrCode" class="inline-block p-2 bg-white border border-slate-200 rounded-lg"></div>
+          <p class="text-[9px] text-slate-400 mt-1 font-mono">QR System Validated</p>
+        </div>
+        <div class="text-center text-xs space-y-8">
+          <p>Panitia PPDB SDIT Waladun Sholihun</p>
+          <p class="font-bold underline">( Bendahara PPDB )</p>
+        </div>
+      </div>
+
+      <div class="flex gap-3 no-print pt-4 border-t border-slate-200">
+        <button onclick="showPage('admin')" class="w-1/2 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs">
+          Kembali Ke Admin
+        </button>
+        <button onclick="window.print()" class="w-1/2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-print"></i> Cetak Kwitansi PDF / Print
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FEATURE 1 & CHATBOT AI: CS CHATBOT INTERAKTIF (USTADZ AI PPDB) -->
+  <div id="aiChatWidget" class="fixed bottom-6 right-6 z-50">
+    
+    <!-- Floating Trigger Button -->
+    <button id="aiToggleBtn" onclick="toggleAiChat()" class="bg-gradient-to-tr from-amber-600 via-brandGold to-amber-300 text-slate-950 p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center relative border-2 border-amber-200">
+      <i class="fa-solid fa-robot text-2xl"></i>
+      <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-black"></span>
+    </button>
+
+    <!-- Chat Box Window -->
+    <div id="aiChatBox" class="hidden absolute bottom-16 right-0 w-[340px] sm:w-[380px] bg-brandNav border border-gray-700 rounded-3xl shadow-2xl flex flex-col h-[480px] overflow-hidden animate-fade-in">
+      
+      <!-- Chat Header -->
+      <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-brandGold text-slate-950 flex items-center justify-center font-bold text-lg">
+            <i class="fa-solid fa-kaaba"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-black text-white">Ustadz AI - CS PPDB</h4>
+            <p class="text-[10px] text-emerald-400 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Online Chatbot CS
+            </p>
+          </div>
+        </div>
+        <button onclick="toggleAiChat()" class="text-gray-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Quick Action Prompts -->
+      <div class="bg-slate-950 px-3 py-2 border-b border-gray-800 overflow-x-auto flex gap-1.5 whitespace-nowrap scrollbar-none">
+        <button onclick="sendQuickPrompt('Berapa rincian biaya masuk PPDB?')" class="bg-gray-800 hover:bg-gray-700 text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/20">
+          💰 Biaya Masuk
+        </button>
+        <button onclick="sendQuickPrompt('Apa saja keunggulan sekolah ini?')" class="bg-gray-800 hover:bg-gray-700 text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/20">
+          ⭐ Keunggulan
+        </button>
+        <button onclick="sendQuickPrompt('Apa saja syarat berkas yang perlu diupload?')" class="bg-gray-800 hover:bg-gray-700 text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/20">
+          📁 Syarat Berkas
+        </button>
+        <button onclick="sendQuickPrompt('Kapan jadwal tes pemetaan?')" class="bg-gray-800 hover:bg-gray-700 text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/20">
+          📅 Jadwal Tes
+        </button>
+      </div>
+
+      <!-- Messages Body -->
+      <div id="aiChatMessages" class="flex-grow p-4 space-y-3 overflow-y-auto text-xs">
+        <div class="flex gap-2">
+          <div class="w-7 h-7 rounded-full bg-brandGold text-slate-950 flex items-center justify-center shrink-0 font-bold text-xs">
+            AI
+          </div>
+          <div class="bg-gray-900 border border-gray-800 p-3 rounded-2xl rounded-tl-none text-gray-200 leading-relaxed space-y-1">
+            <p class="font-bold text-brandGold">Assalamu'alaikum wr. wb. Bapak/Ibu!</p>
+            <p>Saya <strong>Ustadz AI</strong>, asisten CS digital SDIT Waladun Sholihun (Sekolah berbasis Tahfidz & Kewirausahaan). Ada yang bisa saya bantu terkait biaya, kurikulum Metode UMMI, ekskul Panahan, atau berkas pendaftaran?</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Form -->
+      <form onsubmit="handleAiSendMessage(event)" class="p-3 bg-gray-900 border-t border-gray-800 flex gap-2">
+        <input type="text" id="aiChatInput" placeholder="Ketik pertanyaan Anda di sini..." class="w-full bg-brandDark border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brandGold">
+        <button type="submit" class="bg-brandGold hover:bg-brandGoldHover text-slate-950 font-bold px-4 py-2 rounded-xl transition-all">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- REQ 1 & 9: MODAL STUDENT DETAIL (ADMIN VIEW) WITH ASAL TK & UPLOADED FILES -->
+  <div id="studentDetailModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-brandNav border border-gray-800 rounded-3xl max-w-2xl w-full p-6 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
+      <button onclick="closeModal('studentDetailModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+      <div class="border-b border-gray-800 pb-4">
+        <span id="detailModalId" class="text-xs font-mono font-bold text-brandGold">PPDB-000000</span>
+        <h3 id="detailModalName" class="text-xl font-black text-white mt-1">Nama Santri</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="space-y-1">
+          <span class="text-gray-400">NIK Siswa:</span>
+          <p id="detailModalNik" class="font-mono text-white font-bold">-</p>
+        </div>
+        <!-- REQ 1 -->
+        <div class="space-y-1">
+          <span class="text-gray-400">Data Asal TK / RA:</span>
+          <p id="detailModalAsalTk" class="text-amber-300 font-bold">-</p>
+        </div>
+        <div class="space-y-1">
+          <span class="text-gray-400">Gelombang / Skema:</span>
+          <p id="detailModalGelombang" class="text-white font-bold">-</p>
+        </div>
+        <div class="space-y-1">
+          <span class="text-gray-400">Orang Tua (Ayah / Ibu):</span>
+          <p id="detailModalAyah" class="text-white font-bold">-</p>
+        </div>
+        <div class="space-y-1">
+          <span class="text-gray-400">No. WhatsApp Ayah:</span>
+          <p id="detailModalHp" class="text-white font-bold font-mono">-</p>
+        </div>
+        <div class="space-y-1">
+          <span class="text-gray-400">Jadwal Tes Pemetaan:</span>
+          <p id="detailModalJadwal" class="text-amber-300 font-bold">-</p>
+        </div>
+        <div class="space-y-1">
+          <span class="text-gray-400">Sisa Tagihan Biaya:</span>
+          <p id="detailModalSisa" class="text-brandGold font-mono font-bold text-sm">-</p>
+        </div>
+      </div>
+
+      <!-- REQ 9: BERKAS UPLOAD STATUS CHECKLIST -->
+      <div class="bg-gray-950 p-4 rounded-xl space-y-3 border border-gray-800">
+        <h4 class="text-xs font-bold text-brandGold uppercase flex items-center gap-2">
+          <i class="fa-solid fa-folder-open"></i> Status Pengunggahan Berkas Digital
+        </h4>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div id="detailFileAkta" class="p-2 bg-brandDark rounded-lg border border-gray-800 flex justify-between">
+            <span>Akta Kelahiran:</span>
+            <span class="font-bold">-</span>
+          </div>
+          <div id="detailFileKk" class="p-2 bg-brandDark rounded-lg border border-gray-800 flex justify-between">
+            <span>Kartu Keluarga:</span>
+            <span class="font-bold">-</span>
+          </div>
+          <div id="detailFileKtp" class="p-2 bg-brandDark rounded-lg border border-gray-800 flex justify-between">
+            <span>KTP Orang Tua:</span>
+            <span class="font-bold">-</span>
+          </div>
+          <div id="detailFileFoto" class="p-2 bg-brandDark rounded-lg border border-gray-800 flex justify-between">
+            <span>Pas Foto 3x4:</span>
+            <span class="font-bold">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gray-950 p-4 rounded-xl space-y-3 border border-gray-800">
+        <h4 class="text-xs font-bold text-brandGold uppercase">Update Status Pendaftaran</h4>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="updateStudentStatusAction('TERVERIFIKASI')" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold">
+            Set Terverifikasi
+          </button>
+          <button onclick="updateStudentStatusAction('DITERIMA')" class="bg-blue-900/60 hover:bg-blue-800 text-blue-300 border border-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold">
+            Set Diterima
+          </button>
+          <button onclick="updateStudentStatusAction('LUNAS')" class="bg-amber-900/60 hover:bg-amber-800 text-amber-300 border border-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold">
+            Set Lunas
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EXAM CARD DIGITAL -->
+  <div id="examCardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white text-slate-900 rounded-3xl max-w-md w-full p-6 space-y-6 relative shadow-2xl">
+      <button onclick="closeModal('examCardModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+      <div class="text-center border-b-2 border-slate-900 pb-3">
+        <h3 class="text-base font-black text-slate-900 uppercase">KARTU UJIAN PEMETAAN PPDB</h3>
+        <p class="text-[10px] text-slate-600 font-bold">SDIT WALADUN SHOLIHUN T.A. 2026/2027</p>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="flex justify-between">
+          <span class="text-slate-500">ID Registrasi:</span>
+          <span id="cardValId" class="font-mono font-bold text-slate-900">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Nama Santri:</span>
+          <span id="cardValNama" class="font-bold text-slate-900">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Asal TK / RA:</span>
+          <span id="cardValAsalTk" class="font-bold text-slate-900">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Jadwal Tes:</span>
+          <span id="cardValJadwal" class="font-bold text-amber-700">-</span>
+        </div>
+        <!-- REQ 8: RUANG TES FLEKSI BEL -->
+        <div class="flex justify-between">
+          <span class="text-slate-500">Ruang Tes:</span>
+          <span id="cardValRuang" class="font-bold text-slate-900">-</span>
+        </div>
+      </div>
+
+      <div class="flex justify-center pt-2">
+        <div id="examQrCode" class="p-2 bg-white border border-slate-300 rounded-xl"></div>
+      </div>
+
+      <button onclick="window.print()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
+        <i class="fa-solid fa-print"></i> Cetak Kartu Ujian (PDF / Print)
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL LOGIN MULTI-ROLE -->
+  <div id="loginModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-brandNav border border-gray-800 rounded-3xl max-w-sm w-full p-6 space-y-6 relative shadow-2xl">
+      <button onclick="closeModal('loginModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+      <div class="text-center space-y-1">
+        <h3 class="text-xl font-black text-white">Portal Login</h3>
+        <p class="text-xs text-gray-400">Masuk sebagai Wali Santri atau Panitia Admin</p>
+      </div>
+
+      <div class="flex rounded-xl bg-gray-950 p-1 border border-gray-800 text-xs font-bold">
+        <button id="tabWali" onclick="switchLoginTab('wali')" class="w-1/2 py-2 rounded-lg bg-brandGold text-slate-950 transition-all">Wali Santri</button>
+        <button id="tabAdmin" onclick="switchLoginTab('admin')" class="w-1/2 py-2 rounded-lg text-gray-400 transition-all">Panitia Admin</button>
+      </div>
+
+      <!-- Form Login Wali -->
+      <form id="formLoginWali" onsubmit="handleWaliLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs text-gray-300 mb-1">ID Registrasi / NIK Siswa</label>
+          <input type="text" id="loginWaliId" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none font-mono" placeholder="PPDB-2026xxx atau NIK 16 digit">
+        </div>
+        <button type="submit" class="w-full bg-brandGold hover:bg-brandGoldHover text-slate-950 font-bold py-3 rounded-xl text-xs transition-all">
+          Masuk Portal Wali Santri
+        </button>
+      </form>
+
+      <!-- Form Login Admin -->
+      <form id="formLoginAdmin" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs text-gray-300 mb-1">Password Super Admin</label>
+          <input type="password" id="loginAdminPass" required class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Masukkan password admin">
+        </div>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition-all">
+          Masuk Control Panel Admin
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL EDIT ADMIN ACCOUNT -->
+  <div id="adminAccountModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-brandNav border border-gray-800 rounded-3xl max-w-sm w-full p-6 space-y-4 relative shadow-2xl">
+      <button onclick="closeModal('adminAccountModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <h3 class="text-lg font-bold text-white">Ubah Password Admin</h3>
+      <div>
+        <label class="block text-xs text-gray-300 mb-1">Password Baru</label>
+        <input type="password" id="newAdminPassInput" class="w-full bg-brandDark border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-brandGold focus:outline-none" placeholder="Minimal 6 karakter">
+      </div>
+      <button onclick="saveNewAdminPassword()" class="w-full bg-brandGold text-slate-950 font-bold py-3 rounded-xl text-xs">
+        Simpan Password Baru
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL INFORMASI PETUNJUK & ALUR -->
+  <div id="petunjukModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-brandNav border border-gray-800 rounded-3xl max-w-lg w-full p-6 space-y-4 relative shadow-2xl text-xs leading-relaxed text-gray-300">
+      <button onclick="closeModal('petunjukModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <h3 class="text-base font-bold text-brandGold uppercase">Petunjuk Pendaftaran PPDB Online</h3>
+      <ol class="list-decimal pl-4 space-y-2">
+        <li>Isi formulir pendaftaran digital dengan menyertakan nama calon santri, NIK, dan data asal TK/RA.</li>
+        <li>Unggah berkas kelengkapan digital (Akta Kelahiran, KK, KTP Orang Tua, dan Pas Foto 3x4).</li>
+        <li>Pilih jadwal dan sesi tes pemetaan minat & bakat santri.</li>
+        <li>Cetak atau simpan Kartu Ujian digital yang terbit otomatis setelah pendaftaran diselesaikan.</li>
+        <li>Lakukan konfirmasi dan pembayaran biaya melalui nomor rekening resmi sekolah.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="alurModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-brandNav border border-gray-800 rounded-3xl max-w-lg w-full p-6 space-y-4 relative shadow-2xl text-xs leading-relaxed text-gray-300">
+      <button onclick="closeModal('alurModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <h3 class="text-base font-bold text-brandGold uppercase">Alur Seleksi Penerimaan Santri Baru</h3>
+      <div class="space-y-3">
+        <div class="p-3 bg-gray-900 rounded-xl border border-gray-800">1. Pendaftaran Online & Upload Berkas</div>
+        <div class="p-3 bg-gray-900 rounded-xl border border-gray-800">2. Verifikasi Berkas Administrasi oleh Panitia</div>
+        <div class="p-3 bg-gray-900 rounded-xl border border-gray-800">3. Tes Pemetaan Santri & Wawancara Orang Tua</div>
+        <div class="p-3 bg-gray-900 rounded-xl border border-gray-800">4. Pengumuman Kelulusan di Portal PPDB</div>
+        <div class="p-3 bg-gray-900 rounded-xl border border-gray-800">5. Daftar Ulang & Pelunasan Infaq Masuk</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="kontakModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-brandNav border border-gray-800 rounded-3xl max-w-sm w-full p-6 space-y-4 relative shadow-2xl text-xs text-center">
+      <button onclick="closeModal('kontakModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <i class="fa-brands fa-whatsapp text-4xl text-emerald-400"></i>
+      <h3 class="text-base font-bold text-white">Hubungi Panitia PPDB</h3>
+      <p class="text-gray-400">Punya pertanyaan? Chat panitia resmi kami melalui WhatsApp.</p>
+      <a href="https://wa.me/6285712822334" target="_blank" class="block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl">
+        Buka Chat WhatsApp Panitia
+      </a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-brandNav border-t border-gray-800 py-8 text-center text-xs text-gray-500 space-y-2">
+    <p class="font-bold text-gray-400">SDIT WALADUN SHOLIHUN &copy; 2026/2027</p>
+    <p id="footerTagline">Sekolah berbasis Tahfidz dan Kewirausahaan</p>
+  </footer>
+
+  <!-- 3. JAVASCRIPT SYSTEM ENGINE -->
+  <script>
+    // GLOBAL STATE MANAGEMENT WITH STORAGE
+    const STORAGE_KEY = 'ppdb_sdit_waladun_sholihun_v2';
+
+    const defaultState = {
+      config: {
+        tagline: "Sekolah berbasis Tahfidz dan Kewirausahaan",
+        biayaGel1: 3500000,
+        biayaGel2: 4000000,
+        biayaSeragam: 1200000,
+        biayaBuku: 800000,
+        biayaSarpras: 1000000,
+        biayaSpp: 500000,
+        bankName: "Bank Syariah Indonesia (BSI)",
+        bankRek: "7123-4567-8901",
+        bankAtasNama: "Yayasan SDIT Waladun Sholihun",
+        jadwalPendaftaran: "1 Oktober - 30 November 2026",
+        jadwalTesOptions: "Sabtu 10 Okt 2026, Minggu 11 Okt 2026, Sabtu 17 Okt 2026",
+        ruangTes: "Ruang Al-Ghazali (Lantai 2)",
+        adminPass: "admin123"
+      },
+      siswaList: [
+        {
+          id: "PPDB-2026001",
+          nama: "Ahmad Zaki Mubarak",
+          nik: "3171012304050001",
+          jk: "Laki-Laki",
+          tempatLahir: "Jakarta",
+          tglLahir: "2019-05-12",
+          asalTk: "TK Islam Terpadu An-Nur",
+          alamat: "Jl. Masjid Al-Ikhlas No. 45, Jakarta",
+          namaAyah: "Muhammad Ridwan",
+          hpAyah: "081234567890",
+          pekerjaanAyah: "Wiraswasta",
+          namaIbu: "Siti Rahmah",
+          hpIbu: "081298765432",
+          pekerjaanIbu: "Ibu Rumah Tangga",
+          gelombang: "Gelombang 1",
+          skemaPembayaran: "Cicilan 6x",
+          jadwalTes: "Sabtu 10 Okt 2026",
+          totalBiaya: 3500000,
+          terbayar: 1000000,
+          statusVerifikasi: "TERVERIFIKASI",
+          fileAktaStatus: "Telah Diunggah",
+          fileKkStatus: "Telah Diunggah",
+          fileKtpStatus: "Telah Diunggah",
+          fileFotoStatus: "Telah Diunggah",
+          createdAt: "2026-10-01"
+        }
+      ]
+    };
+
+    let appState = loadState();
+    let currentActiveStudent = null;
+    let selectedStudentDetailId = null;
+
+    function loadState() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+          const parsed = JSON.parse(data);
+          return { ...defaultState, ...parsed, config: { ...defaultState.config, ...parsed.config } };
+        }
+      } catch (e) {
+        console.error("Failed loading state from storage", e);
+      }
+      return defaultState;
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      syncDynamicContent();
+    }
+
+    // HELPER FORMATTERS
+    function formatRupiah(num) {
+      return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-600 border-emerald-400 text-white',
+        error: 'bg-rose-600 border-rose-400 text-white',
+        info: 'bg-gray-800 border-brandGold text-brandGold'
+      };
+      toast.className = `p-4 rounded-xl border shadow-2xl text-xs font-bold transition-all flex items-center justify-between gap-3 pointer-events-auto ${colors[type] || colors.info}`;
+      toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.remove(); }, 4000);
+    }
+
+    function showConfirm(title, message, onConfirm) {
+      document.getElementById('confirmTitle').innerText = title;
+      document.getElementById('confirmMessage').innerText = message;
+      const modal = document.getElementById('confirmModal');
+      modal.classList.remove('hidden');
+
+      const btnOk = document.getElementById('confirmBtnOk');
+      const btnCancel = document.getElementById('confirmBtnCancel');
+
+      const cleanup = () => {
+        modal.classList.add('hidden');
+        btnOk.onclick = null;
+        btnCancel.onclick = null;
+      };
+
+      btnOk.onclick = () => { cleanup(); onConfirm(); };
+      btnCancel.onclick = () => { cleanup(); };
+    }
+
+    // NAVIGATION SYSTEM
+    function showPage(pageName) {
+      const pages = ['pageHome', 'pageFormRegister', 'pageDashboardWali', 'pageDashboardAdmin'];
+      pages.forEach(p => {
+        const el = document.getElementById(p);
+        if (el) el.classList.add('hidden');
+      });
+
+      document.getElementById('printableReceipt').classList.add('hidden');
+
+      if (pageName === 'home') document.getElementById('pageHome').classList.remove('hidden');
+      if (pageName === 'register') document.getElementById('pageFormRegister').classList.remove('hidden');
+      if (pageName === 'wali') {
+        document.getElementById('pageDashboardWali').classList.remove('hidden');
+        renderWaliDashboard();
+      }
+      if (pageName === 'admin') {
+        document.getElementById('pageDashboardAdmin').classList.remove('hidden');
+        renderAdminDashboard();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToSection(id) {
+      showPage('home');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    }
+
+    function toggleMobileMenu() {
+      const el = document.getElementById('mobileMenu');
+      el.classList.toggle('hidden');
+    }
+
+    // SYNC DYNAMIC CONTENT (REQ 2, 4, 7, 8)
+    function syncDynamicContent() {
+      // Dynamic Tagline
+      const tagline = appState.config.tagline;
+      document.getElementById('navTagline').innerText = tagline;
+      document.getElementById('heroTagline').innerText = tagline;
+      document.getElementById('loadingSubtitle').innerText = tagline;
+      document.getElementById('footerTagline').innerText = tagline;
+
+      // Dynamic Gelombang Fees
+      document.getElementById('displayBiayaG1').innerText = formatRupiah(appState.config.biayaGel1);
+      document.getElementById('displayBiayaG2').innerText = formatRupiah(appState.config.biayaGel2);
+
+      // Dynamic Bank Details
+      document.getElementById('waliBankName').innerText = appState.config.bankName;
+      document.getElementById('waliBankRek').innerText = appState.config.bankRek;
+      document.getElementById('waliBankAtasNama').innerText = appState.config.bankAtasNama;
+
+      // Dynamic Schedules
+      document.getElementById('displayJadwalPendaftaranHome').innerText = appState.config.jadwalPendaftaran;
+
+      // Dynamic Dropdown Tes
+      const jadwalSelect = document.getElementById('regJadwalTanggal');
+      if (jadwalSelect) {
+        jadwalSelect.innerHTML = '';
+        const options = appState.config.jadwalTesOptions.split(',').map(s => s.trim()).filter(Boolean);
+        options.forEach(opt => {
+          const elOpt = document.createElement('option');
+          elOpt.value = opt;
+          elOpt.innerText = opt;
+          jadwalSelect.appendChild(elOpt);
+        });
+      }
+
+      // Sync Admin Settings Form Inputs
+      document.getElementById('adminBiayaGel1').value = appState.config.biayaGel1;
+      document.getElementById('adminBiayaGel2').value = appState.config.biayaGel2;
+      document.getElementById('adminBiayaSeragam').value = appState.config.biayaSeragam;
+      document.getElementById('adminBiayaBuku').value = appState.config.biayaBuku;
+      document.getElementById('adminBiayaSarpras').value = appState.config.biayaSarpras;
+      document.getElementById('adminBiayaSpp').value = appState.config.biayaSpp;
+
+      document.getElementById('adminBankName').value = appState.config.bankName;
+      document.getElementById('adminBankRek').value = appState.config.bankRek;
+      document.getElementById('adminBankAtasNama').value = appState.config.bankAtasNama;
+
+      document.getElementById('adminJadwalPendaftaran').value = appState.config.jadwalPendaftaran;
+      document.getElementById('adminJadwalTesOptions').value = appState.config.jadwalTesOptions;
+      document.getElementById('adminRuangTes').value = appState.config.ruangTes;
+
+      recalculateSimulation();
+    }
+
+    // REQ 6: FLEXIBLE SIMULATOR & CALCULATOR
+    function recalculateSimulation() {
+      const selectedGel = document.querySelector('input[name="simGelombang"]:checked')?.value || '1';
+      let baseCost = selectedGel === '1' ? appState.config.biayaGel1 : appState.config.biayaGel2;
+
+      let discount = 0;
+      if (document.getElementById('simDiscountAlumni').checked) discount += 300000;
+      if (document.getElementById('simDiscountTahfidz').checked) discount += 500000;
+      if (document.getElementById('simDiscountSibling').checked) discount += 250000;
+
+      const tenor = parseInt(document.getElementById('simTenor').value || '1');
+      if (tenor === 1) discount += 200000; // Cash discount
+
+      let netBase = Math.max(0, baseCost - discount);
+
+      let monthlyAddons = 0;
+      if (document.getElementById('simAddCatering').checked) monthlyAddons += 350000;
+      if (document.getElementById('simAddShuttle').checked) monthlyAddons += 400000;
+      if (document.getElementById('simAddTahfidzIntensive').checked) monthlyAddons += 200000;
+      if (document.getElementById('simAddPanahan').checked) monthlyAddons += 150000;
+
+      const installmentPerMonth = Math.round(netBase / tenor) + monthlyAddons;
+
+      document.getElementById('simValBase').innerText = formatRupiah(baseCost);
+      document.getElementById('simValDiscount').innerText = '- ' + formatRupiah(discount);
+      document.getElementById('simValNetBase').innerText = formatRupiah(netBase);
+      document.getElementById('simValMonthlyAddons').innerText = formatRupiah(monthlyAddons) + ' / bln';
+      document.getElementById('simValInstallment').innerText = formatRupiah(installmentPerMonth) + ' / bln';
+
+      const d = new Date();
+      d.setDate(d.getDate() + 7);
+      document.getElementById('simValDueDate').innerText = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function applySimulatedToReg() {
+      showPage('register');
+      showToast('Hasil simulasi telah diterapkan pada formulir pendaftaran', 'success');
+    }
+
+    // FILE PREVIEW & UPLOAD (REQ 5 & 9)
+    function previewFile(input, previewId) {
+      const file = input.files[0];
+      const previewEl = document.getElementById(previewId);
+      if (file) {
+        previewEl.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check-circle"></i> ${file.name}</span>`;
+      } else {
+        previewEl.innerText = 'Belum diunggah';
+      }
+    }
+
+    // REGISTRATION FORM SUBMISSION
+    function openFormRegister(gelombangName) {
+      showPage('register');
+      document.getElementById('regGelombang').value = gelombangName || 'Gelombang 1';
+    }
+
+    function handleRegisterSubmit(e) {
+      e.preventDefault();
+
+      const gelombang = document.getElementById('regGelombang').value;
+      const totalBiaya = gelombang === 'Gelombang 1' ? appState.config.biayaGel1 : appState.config.biayaGel2;
+
+      const newId = 'PPDB-' + new Date().getFullYear() + String(appState.siswaList.length + 1).padStart(3, '0');
+
+      // REQ 9: Sync File Upload Statuses
+      const hasAkta = document.getElementById('fileAkta').files.length > 0;
+      const hasKk = document.getElementById('fileKk').files.length > 0;
+      const hasKtp = document.getElementById('fileKtp').files.length > 0;
+      const hasFoto = document.getElementById('fileFoto').files.length > 0;
+
+      const newStudent = {
+        id: newId,
+        nama: document.getElementById('regNama').value.trim(),
+        nik: document.getElementById('regNik').value.trim(),
+        jk: document.getElementById('regJk').value,
+        tempatLahir: document.getElementById('regTempatLahir').value.trim(),
+        tglLahir: document.getElementById('regTglLahir').value,
+        asalTk: document.getElementById('regAsalTk').value.trim(), // REQ 1
+        alamat: document.getElementById('regAlamat').value.trim(),
+        namaAyah: document.getElementById('regNamaAyah').value.trim(),
+        hpAyah: document.getElementById('regHpAyah').value.trim(),
+        pekerjaanAyah: document.getElementById('regPekerjaanAyah').value.trim(),
+        namaIbu: document.getElementById('regNamaIbu').value.trim(),
+        hpIbu: document.getElementById('regHpIbu').value.trim(),
+        pekerjaanIbu: document.getElementById('regPekerjaanIbu').value.trim(),
+        gelombang: gelombang,
+        skemaPembayaran: document.getElementById('regSkemaPembayaran').value,
+        jadwalTes: document.getElementById('regJadwalTanggal').value + ' (' + document.getElementById('regJadwalSesi').value + ')',
+        totalBiaya: totalBiaya,
+        terbayar: 0,
+        statusVerifikasi: 'MENUNGGU VERIFIKASI',
+        fileAktaStatus: hasAkta ? 'Telah Diunggah' : 'Belum Diunggah',
+        fileKkStatus: hasKk ? 'Telah Diunggah' : 'Belum Diunggah',
+        fileKtpStatus: hasKtp ? 'Telah Diunggah' : 'Belum Diunggah',
+        fileFotoStatus: hasFoto ? 'Telah Diunggah' : 'Belum Diunggah',
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+
+      appState.siswaList.unshift(newStudent);
+      saveState();
+
+      currentActiveStudent = newStudent;
+      showToast('Bismillah! Pendaftaran berhasil dikirim. Silakan simpan ID Registrasi Anda.', 'success');
+      showPage('wali');
+    }
+
+    // WALI DASHBOARD RENDER
+    function renderWaliDashboard() {
+      if (!currentActiveStudent) {
+        showToast('Silakan login terlebih dahulu', 'error');
+        openLoginModal();
+        return;
+      }
+
+      const s = currentActiveStudent;
+      document.getElementById('waliStudentName').innerText = s.nama;
+      document.getElementById('waliRegId').innerText = 'ID Registrasi: ' + s.id;
+      document.getElementById('waliGelombang').innerText = s.gelombang;
+      document.getElementById('waliAsalTk').innerText = s.asalTk || '-';
+      document.getElementById('waliStatusDokumen').innerText = s.statusVerifikasi;
+
+      const sisa = Math.max(0, s.totalBiaya - s.terbayar);
+      document.getElementById('waliSisaBiaya').innerText = formatRupiah(sisa);
+
+      // WhatsApp link generator
+      const waMsg = encodeURIComponent(`Assalamu'alaikum Panitia PPDB SDIT Waladun Sholihun,\nSaya Wali Santri dari ${s.nama} (${s.id}) ingin mengonfirmasi pembayaran infaq masuk.`);
+      document.getElementById('btnWaKonfirmasi').href = `https://wa.me/6285712822334?text=${waMsg}`;
+
+      // Progress Steps
+      const stepsContainer = document.getElementById('waliProgressSteps');
+      stepsContainer.innerHTML = '';
+      const steps = [
+        { label: '1. Isi Formulir', active: true },
+        { label: '2. Verifikasi Berkas', active: s.statusVerifikasi !== 'MENUNGGU VERIFIKASI' },
+        { label: '3. Tes Pemetaan', active: s.statusVerifikasi === 'TERVERIFIKASI' || s.statusVerifikasi === 'DITERIMA' || s.statusVerifikasi === 'LUNAS' },
+        { label: '4. Pengumuman', active: s.statusVerifikasi === 'DITERIMA' || s.statusVerifikasi === 'LUNAS' },
+        { label: '5. Pelunasan Infaq', active: s.statusVerifikasi === 'LUNAS' }
+      ];
+
+      steps.forEach(st => {
+        const stepEl = document.createElement('div');
+        stepEl.className = `p-3 rounded-xl text-center text-xs font-bold border ${st.active ? 'bg-amber-500/20 border-brandGold text-brandGold' : 'bg-gray-900 border-gray-800 text-gray-500'}`;
+        stepEl.innerText = st.label;
+        stepsContainer.appendChild(stepEl);
+      });
+    }
+
+    // ADMIN DASHBOARD RENDER & ACTIONS
+    function renderAdminDashboard() {
+      renderKpi();
+      renderAdminTable();
+    }
+
+    function renderKpi() {
+      const list = appState.siswaList;
+      document.getElementById('kpiTotalPendaftar').innerText = list.length;
+      document.getElementById('kpiTerverifikasi').innerText = list.filter(s => s.statusVerifikasi === 'TERVERIFIKASI').length;
+      document.getElementById('kpiDiterima').innerText = list.filter(s => s.statusVerifikasi === 'DITERIMA').length;
+      document.getElementById('kpiLunas').innerText = list.filter(s => s.statusVerifikasi === 'LUNAS' || (s.totalBiaya - s.terbayar <= 0)).length;
+
+      const totalRevenue = list.reduce((acc, curr) => acc + (curr.terbayar || 0), 0);
+      document.getElementById('kpiTotalRevenue').innerText = formatRupiah(totalRevenue);
+    }
+
+    function renderAdminTable() {
+      const tbody = document.getElementById('tableSiswaBody');
+      tbody.innerHTML = '';
+
+      const query = document.getElementById('adminSearchInput').value.toLowerCase();
+      const filterStatus = document.getElementById('adminFilterStatus').value;
+
+      const filtered = appState.siswaList.filter(s => {
+        const matchQuery = s.nama.toLowerCase().includes(query) || s.nik.includes(query) || s.id.toLowerCase().includes(query) || (s.asalTk || '').toLowerCase().includes(query);
+        const isLunas = (s.totalBiaya - s.terbayar) <= 0;
+        const matchStatus = filterStatus === 'ALL' ? true : (filterStatus === 'LUNAS' ? isLunas : !isLunas);
+        return matchQuery && matchStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-500">Tidak ada data pendaftar yang sesuai.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-900/60 transition-colors';
+
+        const sisa = Math.max(0, s.totalBiaya - s.terbayar);
+        const isLunas = sisa === 0;
+
+        // REQ 9: File uploaded badges
+        const getFileBadge = (status, label) => {
+          return status === 'Telah Diunggah' ? `<span class="text-emerald-400" title="${label}: Ada"><i class="fa-solid fa-file-check"></i></span>` : `<span class="text-gray-600" title="${label}: Belum"><i class="fa-solid fa-file-xmark"></i></span>`;
+        };
+
+        const fileBadges = `
+          <div class="flex gap-2 text-sm">
+            ${getFileBadge(s.fileAktaStatus, 'Akta')}
+            ${getFileBadge(s.fileKkStatus, 'KK')}
+            ${getFileBadge(s.fileKtpStatus, 'KTP')}
+            ${getFileBadge(s.fileFotoStatus, 'Foto')}
+          </div>
+        `;
+
+        tr.innerHTML = `
+          <td class="p-3 font-mono text-brandGold font-bold">${s.id}</td>
+          <td class="p-3 font-bold text-white">${s.nama}</td>
+          <td class="p-3 text-amber-300 font-semibold">${s.asalTk || '-'}</td>
+          <td class="p-3">${s.gelombang}</td>
+          <td class="p-3 font-mono">${s.hpAyah}</td>
+          <td class="p-3">${fileBadges}</td>
+          <td class="p-3 font-bold ${isLunas ? 'text-emerald-400' : 'text-amber-400'}">${isLunas ? 'LUNAS' : 'BELUM LUNAS'}</td>
+          <td class="p-3 font-mono text-brandGold">${formatRupiah(sisa)}</td>
+          <td class="p-3 text-center space-x-1">
+            <button onclick="openStudentDetailModal('${s.id}')" class="bg-gray-800 hover:bg-gray-700 text-brandGold px-2.5 py-1 rounded-lg text-[10px] font-bold">Detail</button>
+            <button onclick="deleteStudentData('${s.id}')" class="bg-rose-950 hover:bg-rose-900 text-rose-300 px-2 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // REQ 4, 6, 7, 8: SAVE ADMIN CONFIGURATION
+    function saveAdminSettings() {
+      appState.config.biayaGel1 = parseInt(document.getElementById('adminBiayaGel1').value || '3500000');
+      appState.config.biayaGel2 = parseInt(document.getElementById('adminBiayaGel2').value || '4000000');
+      appState.config.biayaSeragam = parseInt(document.getElementById('adminBiayaSeragam').value || '1200000');
+      appState.config.biayaBuku = parseInt(document.getElementById('adminBiayaBuku').value || '800000');
+      appState.config.biayaSarpras = parseInt(document.getElementById('adminBiayaSarpras').value || '1000000');
+      appState.config.biayaSpp = parseInt(document.getElementById('adminBiayaSpp').value || '500000');
+
+      appState.config.bankName = document.getElementById('adminBankName').value.trim();
+      appState.config.bankRek = document.getElementById('adminBankRek').value.trim();
+      appState.config.bankAtasNama = document.getElementById('adminBankAtasNama').value.trim();
+
+      appState.config.jadwalPendaftaran = document.getElementById('adminJadwalPendaftaran').value.trim();
+      appState.config.jadwalTesOptions = document.getElementById('adminJadwalTesOptions').value.trim();
+      appState.config.ruangTes = document.getElementById('adminRuangTes').value.trim();
+
+      saveState();
+      showToast('Setelan Admin berhasil diperbarui & sinkron ke seluruh portal', 'success');
+      renderAdminDashboard();
+    }
+
+    // PAYMENT PROCESSING & RECEIPT (REQ 10)
+    function submitPaymentProcess() {
+      const regId = document.getElementById('payIdReg').value.trim();
+      const nominal = parseInt(document.getElementById('payNominal').value || '0');
+      const tipe = document.getElementById('payTipe').value;
+
+      if (!regId || nominal <= 0) {
+        showToast('Harap masukan ID Registrasi dan nominal pembayaran yang valid', 'error');
+        return;
+      }
+
+      const student = appState.siswaList.find(s => s.id.toLowerCase() === regId.toLowerCase());
+      if (!student) {
+        showToast('Data calon santri tidak ditemukan', 'error');
+        return;
+      }
+
+      student.terbayar += nominal;
+      if (student.terbayar >= student.totalBiaya) {
+        student.statusVerifikasi = 'LUNAS';
+      }
+      saveState();
+
+      renderAdminDashboard();
+      generateAndPrintReceipt(student, nominal, tipe);
+      showToast('Pembayaran berhasil diproses dan Kwitansi terbit!', 'success');
+    }
+
+    // REQ 10: PRINTABLE RECEIPT PDF / PRINT OUT
+    function generateAndPrintReceipt(student, amount, type) {
+      const trxId = 'TRX-' + Date.now().toString().slice(-6);
+      const remaining = Math.max(0, student.totalBiaya - student.terbayar);
+
+      document.getElementById('recTrxId').innerText = trxId;
+      document.getElementById('recDate').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('recStudentName').innerText = student.nama;
+      document.getElementById('recStudentId').innerText = student.id;
+      document.getElementById('recType').innerText = type;
+      document.getElementById('recAmount').innerText = formatRupiah(amount);
+      document.getElementById('recRemaining').innerText = formatRupiah(remaining);
+
+      // Generate Receipt QR
+      const qrBox = document.getElementById('receiptQrCode');
+      qrBox.innerHTML = '';
+      new QRCode(qrBox, {
+        text: `KWITANSI-SDIT-WALADUN-SHOLIHUN|${student.id}|${amount}|${trxId}`,
+        width: 80,
+        height: 80
+      });
+
+      document.getElementById('printableReceipt').classList.remove('hidden');
+      document.getElementById('pageDashboardAdmin').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // EXAM CARD DIGITAL MODAL
+    function openExamCardModal() {
+      if (!currentActiveStudent) return;
+      const s = currentActiveStudent;
+      document.getElementById('cardValId').innerText = s.id;
+      document.getElementById('cardValNama').innerText = s.nama;
+      document.getElementById('cardValAsalTk').innerText = s.asalTk || '-';
+      document.getElementById('cardValJadwal').innerText = s.jadwalTes;
+      document.getElementById('cardValRuang').innerText = appState.config.ruangTes; // REQ 8
+
+      const qrBox = document.getElementById('examQrCode');
+      qrBox.innerHTML = '';
+      new QRCode(qrBox, {
+        text: `KARTU-UJIAN|${s.id}|${s.nama}`,
+        width: 100,
+        height: 100
+      });
+
+      openModal('examCardModal');
+    }
+
+    // REQ 1 & 9: STUDENT DETAIL MODAL IN ADMIN
+    function openStudentDetailModal(id) {
+      const s = appState.siswaList.find(x => x.id === id);
+      if (!s) return;
+
+      selectedStudentDetailId = id;
+      document.getElementById('detailModalId').innerText = s.id;
+      document.getElementById('detailModalName').innerText = s.nama;
+      document.getElementById('detailModalNik').innerText = s.nik;
+      document.getElementById('detailModalAsalTk').innerText = s.asalTk || '-'; // REQ 1
+      document.getElementById('detailModalGelombang').innerText = s.gelombang + ' / ' + s.skemaPembayaran;
+      document.getElementById('detailModalAyah').innerText = s.namaAyah + ' / ' + s.namaIbu;
+      document.getElementById('detailModalHp').innerText = s.hpAyah;
+      document.getElementById('detailModalJadwal').innerText = s.jadwalTes;
+      document.getElementById('detailModalSisa').innerText = formatRupiah(Math.max(0, s.totalBiaya - s.terbayar));
+
+      // REQ 9: File upload status display
+      document.getElementById('detailFileAkta').querySelector('span:last-child').innerText = s.fileAktaStatus;
+      document.getElementById('detailFileKk').querySelector('span:last-child').innerText = s.fileKkStatus;
+      document.getElementById('detailFileKtp').querySelector('span:last-child').innerText = s.fileKtpStatus;
+      document.getElementById('detailFileFoto').querySelector('span:last-child').innerText = s.fileFotoStatus;
+
+      openModal('studentDetailModal');
+    }
+
+    function updateStudentStatusAction(status) {
+      if (!selectedStudentDetailId) return;
+      const s = appState.siswaList.find(x => x.id === selectedStudentDetailId);
+      if (s) {
+        s.statusVerifikasi = status;
+        saveState();
+        renderAdminDashboard();
+        closeModal('studentDetailModal');
+        showToast(`Status santri ${s.nama} berhasil diperbarui menjadi ${status}`, 'success');
+      }
+    }
+
+    function deleteStudentData(id) {
+      showConfirm('Hapus Data Santri', `Apakah Anda yakin ingin menghapus data calon santri ID ${id}?`, () => {
+        appState.siswaList = appState.siswaList.filter(s => s.id !== id);
+        saveState();
+        renderAdminDashboard();
+        showToast('Data pendaftar telah dihapus.', 'info');
+      });
+    }
+
+    // EXPORT CSV DATA
+    function exportDataToCSV() {
+      if (appState.siswaList.length === 0) {
+        showToast('Tidak ada data calon santri untuk diekspor', 'error');
+        return;
+      }
+
+      let csv = 'ID Reg,Nama Santri,NIK,Jenis Kelamin,Asal TK/RA,Nama Ayah,No WA,Gelombang,Skema,Status Verifikasi,Total Biaya,Terbayar,Sisa Tagihan\n';
+      appState.siswaList.forEach(s => {
+        const sisa = Math.max(0, s.totalBiaya - s.terbayar);
+        csv += `"${s.id}","${s.nama}","${s.nik}","${s.jk}","${s.asalTk || '-'}","${s.namaAyah}","${s.hpAyah}","${s.gelombang}","${s.skemaPembayaran}","${s.statusVerifikasi}",${s.totalBiaya},${s.terbayar},${sisa}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Database_PPDB_SDIT_Waladun_Sholihun_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // AUTHENTICATION LOGIC
+    function openLoginModal() {
+      openModal('loginModal');
+      switchLoginTab('wali');
+    }
+
+    function switchLoginTab(role) {
+      const tabWali = document.getElementById('tabWali');
+      const tabAdmin = document.getElementById('tabAdmin');
+      const formWali = document.getElementById('formLoginWali');
+      const formAdmin = document.getElementById('formLoginAdmin');
+
+      if (role === 'wali') {
+        tabWali.className = 'w-1/2 py-2 rounded-lg bg-brandGold text-slate-950 transition-all';
+        tabAdmin.className = 'w-1/2 py-2 rounded-lg text-gray-400 transition-all';
+        formWali.classList.remove('hidden');
+        formAdmin.classList.add('hidden');
+      } else {
+        tabAdmin.className = 'w-1/2 py-2 rounded-lg bg-emerald-600 text-white transition-all';
+        tabWali.className = 'w-1/2 py-2 rounded-lg text-gray-400 transition-all';
+        formAdmin.classList.remove('hidden');
+        formWali.classList.add('hidden');
+      }
+    }
+
+    function handleWaliLogin(e) {
+      e.preventDefault();
+      const val = document.getElementById('loginWaliId').value.trim().toLowerCase();
+      const found = appState.siswaList.find(s => s.id.toLowerCase() === val || s.nik === val);
+
+      if (found) {
+        currentActiveStudent = found;
+        closeModal('loginModal');
+        showPage('wali');
+        showToast(`Selamat datang Kembali, Wali Santri dari ${found.nama}`, 'success');
+      } else {
+        showToast('ID Registrasi / NIK tidak terdaftar. Periksa kembali inputan Anda.', 'error');
+      }
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const pass = document.getElementById('loginAdminPass').value;
+      if (pass === appState.config.adminPass) {
+        closeModal('loginModal');
+        showPage('admin');
+        showToast('Akses Admin Diberikan. Selamat Datang Panitia PPDB!', 'success');
+      } else {
+        showToast('Password Admin salah!', 'error');
+      }
+    }
+
+    function saveNewAdminPassword() {
+      const pass = document.getElementById('newAdminPassInput').value;
+      if (pass.length >= 6) {
+        appState.config.adminPass = pass;
+        saveState();
+        closeModal('adminAccountModal');
+        showToast('Password Admin berhasil diubah!', 'success');
+      } else {
+        showToast('Password minimal 6 karakter', 'error');
+      }
+    }
+
+    function confirmResetAllData() {
+      showConfirm('Reset Seluruh Data PPDB', 'Apakah Anda yakin ingin mengembalikan seluruh data dan setelan ke default pabrik? Tindakan ini tidak dapat dibatalkan.', () => {
+        localStorage.removeItem(STORAGE_KEY);
+        appState = JSON.parse(JSON.stringify(defaultState));
+        saveState();
+        renderAdminDashboard();
+        showToast('Data berhasil di-reset ke kondisi awal.', 'info');
+      });
+    }
+
+    function logout() {
+      currentActiveStudent = null;
+      showPage('home');
+      showToast('Anda telah logout dari portal.', 'info');
+    }
+
+    // FEATURE 1 & CHATBOT AI CS INTERAKTIF (USTADZ AI)
+    function toggleAiChat() {
+      const chatBox = document.getElementById('aiChatBox');
+      chatBox.classList.toggle('hidden');
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('aiChatInput').value = promptText;
+      handleAiSendMessage(new Event('submit'));
+    }
+
+    function handleAiSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('aiChatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById('aiChatMessages');
+
+      // User Message Bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'flex justify-end gap-2';
+      userBubble.innerHTML = `
+        <div class="bg-brandGold text-slate-950 font-semibold p-3 rounded-2xl rounded-tr-none text-xs max-w-[80%]">
+          ${text}
+        </div>
+      `;
+      container.appendChild(userBubble);
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      // Simulated AI Reply Engine
+      setTimeout(() => {
+        let responseText = "Afwan, Ustadz AI belum memahami pertanyaan tersebut. Silakan hubungi Panitia PPDB via WhatsApp di 085712822334.";
+
+        const lower = text.toLowerCase();
+        if (lower.includes('biaya') || lower.includes('uang') || lower.includes('harga') || lower.includes('bayar')) {
+          responseText = `Estimasi Uang Masuk Utama SDIT Waladun Sholihun:\n• **Gelombang 1**: ${formatRupiah(appState.config.biayaGel1)}\n• **Gelombang 2**: ${formatRupiah(appState.config.biayaGel2)}\n\nTersedia kemudahan skema cicilan hingga 12 bulan & potongan beasiswa Tahfidz!`;
+        } else if (lower.includes('keunggulan') || lower.includes('fasilitas') || lower.includes('program') || lower.includes('metode')) {
+          responseText = "Keunggulan Utama SDIT Waladun Sholihun:\n1. **Metode UMMI**: Pembelajaran Al-Qur'an tartil & mutqin.\n2. **Ekskul Panahan**: Melatih konsentrasi & berprestasi hingga Tingkat Nasional.\n3. **Kewirausahaan**: Karakteristik bisnis muslim & praktek Market Day sejak dini.";
+        } else if (lower.includes('berkas') || lower.includes('syarat') || lower.includes('dokumen') || lower.includes('upload')) {
+          responseText = "Syarat berkas pendaftaran yang wajib diunggah (Format Foto JPG/PNG):\n1. Akta Kelahiran Siswa\n2. Kartu Keluarga (KK)\n3. KTP Orang Tua\n4. Pas Foto Berwarna 3x4";
+        } else if (lower.includes('jadwal') || lower.includes('tanggal') || lower.includes('tes')) {
+          responseText = `Pendaftaran dibuka: **${appState.config.jadwalPendaftaran}**.\nJadwal Tes Pemetaan: **${appState.config.jadwalTesOptions}** bertempat di **${appState.config.ruangTes}**.`;
+        } else if (lower.includes('tahfidz') || lower.includes('quran')) {
+          responseText = "SDIT Waladun Sholihun memiliki program unggulan Tahfidz Al-Qur'an target minimal 3 Juz dengan sanad dan bimbingan Metode UMMI terstandar.";
+        }
+
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'flex gap-2';
+        aiBubble.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-brandGold text-slate-950 flex items-center justify-center shrink-0 font-bold text-xs">
+            AI
+          </div>
+          <div class="bg-gray-900 border border-gray-800 p-3 rounded-2xl rounded-tl-none text-gray-200 leading-relaxed space-y-1">
+            <p>${responseText.replace(/\n/g, '<br>')}</p>
+          </div>
+        `;
+        container.appendChild(aiBubble);
+        container.scrollTop = container.scrollHeight;
+      }, 600);
+    }
+
+    // INITIALIZATION ON LOAD
+    window.addEventListener('DOMContentLoaded', () => {
+      syncDynamicContent();
+
+      // Home Page QRCode
+      const homeQr = document.getElementById('homeQrPlaceholder');
+      if (homeQr) {
+        homeQr.innerHTML = '';
+        new QRCode(homeQr, {
+          text: window.location.href,
+          width: 110,
+          height: 110
+        });
+      }
+
+      // Hide Fullscreen Loader
+      setTimeout(() => {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+          overlay.classList.add('opacity-0');
+          setTimeout(() => overlay.remove(), 300);
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>
